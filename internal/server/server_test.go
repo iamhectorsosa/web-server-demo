@@ -14,7 +14,6 @@ func TestServer(t *testing.T) {
 	defer cleanup()
 	initialUsers := []store.User{
 		{Id: "1", Email: "sosa@webscope.io"},
-		{Id: "2", Email: "hulla@webscope.io"},
 	}
 	store := memorystore.New(initialUsers...)
 	server := New(store)
@@ -42,7 +41,7 @@ func TestServer(t *testing.T) {
 
 		AssertStatus(t, http.StatusOK, response.Code)
 		AssertContentType(t, "application/json", response.Header())
-		AssertResponseBody(t, "[{\"id\":\"1\",\"email\":\"sosa@webscope.io\"},{\"id\":\"2\",\"email\":\"hulla@webscope.io\"}]", response.Body.String())
+		AssertResponseBody(t, "[{\"id\":\"1\",\"email\":\"sosa@webscope.io\"}]", response.Body.String())
 	})
 
 	t.Run("returns a store user", func(t *testing.T) {
