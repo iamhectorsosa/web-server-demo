@@ -2,8 +2,20 @@ package server
 
 import (
 	"net/http"
+	"os"
 	"testing"
+
+	"github.com/joho/godotenv"
 )
+
+func EnvLoad() (cleanup func()) {
+	envDir := ".env"
+	_ = godotenv.Write(map[string]string{"PORT": "8080"}, envDir)
+
+	return func() {
+		os.RemoveAll(envDir)
+	}
+}
 
 func AssertResponseBody(t testing.TB, want, got string) {
 	t.Helper()

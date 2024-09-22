@@ -3,21 +3,15 @@ package server
 import (
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"testing"
 
 	"github.com/iamhectorsosa/web-server-demo/internal/memorystore"
 	"github.com/iamhectorsosa/web-server-demo/internal/store"
-	"github.com/joho/godotenv"
 )
 
 func TestServer(t *testing.T) {
-	envDir := ".env"
-	env, _ := godotenv.Unmarshal("PORT=8080")
-	_ = godotenv.Write(env, envDir)
-
-	defer os.RemoveAll(envDir)
-
+	cleanup := EnvLoad()
+	defer cleanup()
 	initialUsers := []store.User{
 		{Id: "1", Email: "sosa@webscope.io"},
 		{Id: "2", Email: "hulla@webscope.io"},
@@ -49,5 +43,18 @@ func TestServer(t *testing.T) {
 		AssertStatus(t, http.StatusOK, response.Code)
 		AssertContentType(t, "application/json", response.Header())
 		AssertResponseBody(t, "[{\"id\":\"1\",\"email\":\"sosa@webscope.io\"},{\"id\":\"2\",\"email\":\"hulla@webscope.io\"}]", response.Body.String())
+	})
+
+	t.Run("returns a store user", func(t *testing.T) {
+		request, err := http.NewRequest(http.MethodGet, "/api/users/1", nil)
+		if err != nil {
+			t.Errorf("error creating new request: %v", err)
+		}
+		response := httptest.NewRecorder()
+		server.Handler.ServeHTTP(response, request)
+
+		AssertStatus(t, http.StatusOK, response.Code)
+		AssertContentType(t, "application/json", response.Header())
+		AssertResponseBody(t, "{\"id\":\"1\",\"email\":\"sosa@webscope.io\"}", response.Body.String())
 	})
 }

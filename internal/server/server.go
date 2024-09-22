@@ -27,6 +27,7 @@ func New(store store.Store) *Server {
 	router := http.NewServeMux()
 	router.HandleFunc("GET /api/health", server.health)
 	router.HandleFunc("GET /api/users", server.users)
+	router.HandleFunc("GET /api/users/{id}", server.user)
 
 	server.Addr = addr
 	server.Handler = router

@@ -26,3 +26,15 @@ func (s *Server) users(w http.ResponseWriter, r *http.Request) {
 
 	respondWithJSON(w, http.StatusOK, users)
 }
+
+func (s *Server) user(w http.ResponseWriter, r *http.Request) {
+	user, err := s.store.User(r.PathValue("id"))
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+	}
+
+	respondWithJSON(w, http.StatusOK, UserResponse{
+		Id:    user.Id,
+		Email: user.Email,
+	})
+}
